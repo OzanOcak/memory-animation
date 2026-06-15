@@ -8,9 +8,9 @@ export const steps = [
   },
   {
     number: 2,
-    label: "Step 2: Multiply by itself ×5 (5 times)",
-    description: `value × value (do this 5 times) - binary multiplication`,
-    iterations: 5,
+    label: "Step 2: Padding",
+    description: `Padding`,
+    iterations: 1,
   },
   {
     number: 3,

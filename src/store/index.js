@@ -9,11 +9,15 @@ import {
 import {
   binaryAdd,
   binarySubtract,
-  binaryMultiplyByItself,
+  //binaryMultiplyByItself,
   binaryMultiplyByTwo,
   binaryMultiplyByTwenty,
 } from "./operations";
 import { steps } from "./steps";
+import {
+  applySha1PaddingToString,
+  //applySha1PaddingToValue,
+} from "./sha1Wrapper";
 
 // Make sure TOTAL_BITS is defined before using it
 console.log("TOTAL_BITS:", TOTAL_BITS); // Debug: should show 625
@@ -134,9 +138,32 @@ const useStore = create((set, get) => ({
       const oldBinaryArray = bigIntToBinaryArray(currentValue);
 
       switch (stepNumber) {
-        case 2:
-          newValue = await binaryMultiplyByItself(currentValue, binaryAdd);
+        case 2: {
+          // Get current binary as string with correct length
+          const currentBinary = binaryValue
+            .toString(2)
+            .padStart(get().currentUsedLength, "0");
+          const paddingResult = applySha1PaddingToString(currentBinary);
+          newValue = paddingResult.paddedString; // This is a string, not BigInt
+
+          // Convert string to binary array for display
+          const newBinaryArray = paddingResult.paddedString
+            .split("")
+            .map((bit) => parseInt(bit));
+
+          // Pad or trim to TOTAL_BITS
+          while (newBinaryArray.length < TOTAL_BITS) newBinaryArray.unshift(0);
+          while (newBinaryArray.length > TOTAL_BITS) newBinaryArray.shift();
+
+          await get().animateBitChange(oldBinaryArray, newBinaryArray);
+
+          set({
+            paddingInfo: paddingResult.paddingResult,
+            currentUsedLength: paddingResult.newLength,
+            memory: newBinaryArray,
+          });
           break;
+        }
         case 3:
           newValue = binaryAdd(currentValue, currentValue);
           break;
