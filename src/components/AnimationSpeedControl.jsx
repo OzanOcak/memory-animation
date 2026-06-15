@@ -1,7 +1,6 @@
 // src/components/AnimationSpeedControl.jsx
 
-import useStore from "../store";
-
+import useStore from "../store/index.js";
 const AnimationSpeedControl = () => {
   const {
     animationSpeed,

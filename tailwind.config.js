@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       gridTemplateColumns: {
-        16: "repeat(16, minmax(0, 1fr))",
+        16: "repeat(25, minmax(0, .3fr))",
       },
       animation: {
         "pulse-fast": "pulse 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",

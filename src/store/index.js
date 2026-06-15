@@ -1,70 +1,26 @@
-// src/store.js
+// src/store/index.js
 import { create } from "zustand";
+import { TOTAL_BITS } from "./constants"; // Import FIRST
+import {
+  get8BitAlignedLength,
+  stringToBinaryBigInt,
+  bigIntToBinaryArray,
+} from "./utils";
+import {
+  binaryAdd,
+  binarySubtract,
+  binaryMultiplyByItself,
+  binaryMultiplyByTwo,
+  binaryMultiplyByTwenty,
+} from "./operations";
+import { steps } from "./steps";
 
-const GRID_SIZE = 25;
-const TOTAL_BITS = GRID_SIZE * GRID_SIZE;
-const MAX_SAFE_VALUE = 2n ** BigInt(TOTAL_BITS) - 1n;
-
-const get8BitAlignedLength = (bigIntValue) => {
-  const binaryStr = bigIntValue.toString(2);
-  const length = binaryStr.length;
-  // Round UP to nearest multiple of 8
-  return Math.ceil(length / 8) * 8;
-};
-
-// Convert any string to binary BigInt
-const stringToBinaryBigInt = (str) => {
-  if (!str || str === "") return 0n;
-
-  let binaryString = "";
-  for (let i = 0; i < str.length; i++) {
-    let charBinary = str.charCodeAt(i).toString(2);
-    charBinary = charBinary.padStart(8, "0"); // Keep 8-bit padding
-    binaryString += charBinary;
-  }
-
-  try {
-    return BigInt("0b" + binaryString);
-    // eslint-disable-next-line no-unused-vars
-  } catch (e) {
-    return 0n;
-  }
-};
-
-// Convert BigInt to binary array for display
-const bigIntToBinaryArray = (value) => {
-  const binaryArray = new Array(TOTAL_BITS).fill(0);
-  if (value === 0n) return binaryArray;
-
-  let binaryStr = value.toString(2);
-  if (binaryStr.length > TOTAL_BITS) {
-    binaryStr = binaryStr.slice(-TOTAL_BITS);
-  }
-  binaryStr = binaryStr.padStart(TOTAL_BITS, "0");
-
-  for (let i = 0; i < TOTAL_BITS; i++) {
-    binaryArray[i] = parseInt(binaryStr[i]);
-  }
-
-  return binaryArray;
-};
-
-// Binary arithmetic operations
-const binaryAdd = (a, b) => {
-  let result = a + b;
-  if (result > MAX_SAFE_VALUE) result = result & MAX_SAFE_VALUE;
-  return result;
-};
-
-const binarySubtract = (a, b) => {
-  let result = a - b;
-  if (result < 0n) result = 0n;
-  return result;
-};
+// Make sure TOTAL_BITS is defined before using it
+console.log("TOTAL_BITS:", TOTAL_BITS); // Debug: should show 625
 
 const useStore = create((set, get) => ({
   binaryValue: 0n,
-  memory: new Array(TOTAL_BITS).fill(0),
+  memory: new Array(TOTAL_BITS).fill(0), // Now TOTAL_BITS is defined
   activeBits: new Set(),
   isExecuting: false,
   isAutoRunning: false,
@@ -79,68 +35,18 @@ const useStore = create((set, get) => ({
   iterationDelay: 800,
   stepDelay: 500,
 
-  steps: [
-    {
-      number: 1,
-      label: "Step 1: Enter Value",
-      description: `Load initial value (any text → binary)`,
-      iterations: 1,
-    },
-    {
-      number: 2,
-      label: "Step 2: Multiply by itself ×5 (5 times)",
-      description: `value × value (do this 5 times) - binary multiplication`,
-      iterations: 5,
-    },
-    {
-      number: 3,
-      label: "Step 3: Add Value by itself",
-      description: `value + value - binary addition`,
-      iterations: 1,
-    },
-    {
-      number: 4,
-      label: "Step 4: Multiply × 2 (5 times)",
-      description: `value × 2 (do this 5 times) - left shift`,
-      iterations: 5,
-    },
-    {
-      number: 5,
-      label: "Step 5: Subtract Value by 2",
-      description: `value - 2 - binary subtraction`,
-      iterations: 1,
-    },
-    {
-      number: 6,
-      label: "Step 6: Multiply ×2 (10 times)",
-      description: `value × 2 (do this 10 times) - left shifts`,
-      iterations: 10,
-    },
-    {
-      number: 7,
-      label: "Step 7: Subtract by 5",
-      description: `value - 5 - binary subtraction`,
-      iterations: 1,
-    },
-    {
-      number: 8,
-      label: "Step 8: Add by 3",
-      description: `value + 3 (FINAL) - binary addition`,
-      iterations: 1,
-    },
-  ],
+  steps,
 
   setInputValue: (value) => {
     const binaryBigInt = stringToBinaryBigInt(value);
     set({
       inputValue: value,
       originalInputBinary: binaryBigInt,
-      currentUsedLength: value.length * 8, // Just this line
+      currentUsedLength: value.length * 8,
     });
   },
 
   setOnStepComplete: (callback) => set({ onStepComplete: callback }),
-
   setAnimationSpeed: (speed) => set({ animationSpeed: speed }),
   setIterationDelay: (delay) => set({ iterationDelay: delay }),
   setStepDelay: (delay) => set({ stepDelay: delay }),
@@ -187,37 +93,6 @@ const useStore = create((set, get) => ({
     await new Promise((resolve) => setTimeout(resolve, animationSpeed));
   },
 
-  binaryMultiplyByItself: async (currentValue) => {
-    let result = 0n;
-    let tempB = currentValue;
-    let tempA = currentValue;
-
-    while (tempB > 0n) {
-      if (tempB & 1n) {
-        result = binaryAdd(result, tempA);
-      }
-      tempA = tempA << 1n;
-      tempB = tempB >> 1n;
-      if (result > MAX_SAFE_VALUE) result = result & MAX_SAFE_VALUE;
-    }
-
-    return result;
-  },
-
-  binaryMultiplyByTwo: async (currentValue) => {
-    let result = currentValue << 1n;
-    if (result > MAX_SAFE_VALUE) result = result & MAX_SAFE_VALUE;
-    return result;
-  },
-
-  binaryMultiplyByTwenty: async (currentValue) => {
-    let multiplyBy16 = currentValue << 4n;
-    let multiplyBy4 = currentValue << 2n;
-    let result = binaryAdd(multiplyBy16, multiplyBy4);
-    if (result > MAX_SAFE_VALUE) result = result & MAX_SAFE_VALUE;
-    return result;
-  },
-
   executeStep: async (stepNumber) => {
     const {
       isExecuting,
@@ -242,7 +117,6 @@ const useStore = create((set, get) => ({
 
     let currentValue = binaryValue;
 
-    // For step 1, get the binary from input and update display
     if (stepNumber === 1) {
       const inputBinary = get().getBinaryFromInput();
       const oldBinaryArray = bigIntToBinaryArray(currentValue);
@@ -261,19 +135,19 @@ const useStore = create((set, get) => ({
 
       switch (stepNumber) {
         case 2:
-          newValue = await get().binaryMultiplyByItself(currentValue);
+          newValue = await binaryMultiplyByItself(currentValue, binaryAdd);
           break;
         case 3:
           newValue = binaryAdd(currentValue, currentValue);
           break;
         case 4:
-          newValue = await get().binaryMultiplyByTwo(currentValue);
+          newValue = await binaryMultiplyByTwo(currentValue);
           break;
         case 5:
           newValue = binarySubtract(currentValue, 2n);
           break;
         case 6:
-          newValue = await get().binaryMultiplyByTwenty(currentValue);
+          newValue = await binaryMultiplyByTwenty(currentValue, binaryAdd);
           break;
         case 7:
           newValue = binarySubtract(currentValue, 5n);
@@ -328,9 +202,7 @@ const useStore = create((set, get) => ({
 
     for (const step of steps) {
       if (!get().isAutoRunning) break;
-
       await get().executeStep(step.number);
-
       if (step.number < 8) {
         await new Promise((resolve) => setTimeout(resolve, stepDelay));
       }

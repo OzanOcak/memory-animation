@@ -1,11 +1,12 @@
 // src/App.js
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import useStore from "./store";
+
 import MemoryGrid from "./components/MemoryGrid";
 import StepControls from "./components/StepControls";
 import ValueInput from "./components/ValueInput";
 import AnimationSpeedControl from "./components/AnimationSpeedControl";
+import useStore from "./store/index.js";
 
 function App() {
   const {

@@ -1,7 +1,6 @@
 // src/components/StepControls.jsx
 import { motion } from "framer-motion";
-import useStore from "../store";
-
+import useStore from "../store/index.js";
 const StepControls = ({ steps, onExecuteStep, isExecuting, currentStep }) => {
   const { isAutoRunning, autoRunAllSteps, stopAutoRun } = useStore();
 

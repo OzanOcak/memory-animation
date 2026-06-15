@@ -4,7 +4,7 @@
 
 @layer utilities {
   .grid-cols-16 {
-    grid-template-columns: repeat(48, minmax(0, 0.3fr));
+    grid-template-columns: repeat(25, minmax(0, 1fr));
   }
 }
 
