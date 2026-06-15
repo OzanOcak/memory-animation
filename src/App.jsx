@@ -19,6 +19,7 @@ function App() {
     value,
     inputValue,
     setInputValue,
+    words16,
   } = useStore();
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -103,6 +104,37 @@ function App() {
           {/* Left Column - Memory Grid */}
           <div className="flex-1">
             <MemoryGrid />
+
+            {/* Live Word Display - shows when words exist */}
+            {words16.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 p-4 bg-gray-900/80 rounded-xl border border-gray-700"
+              >
+                <div className="text-sm font-bold text-gray-300 mb-3">
+                  📦 16 Words (32 bits each) - Step 3 Complete
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {words16.map((word) => (
+                    <div
+                      key={word.index}
+                      className="bg-gray-800 rounded-lg p-2"
+                    >
+                      <div className="text-xs text-blue-400">
+                        W[{word.index}]
+                      </div>
+                      <div className="font-mono text-sm text-green-400 font-bold">
+                        {word.hex}
+                      </div>
+                      <div className="text-[10px] text-gray-500 truncate">
+                        {word.bits}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Right Column - Controls */}

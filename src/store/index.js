@@ -33,6 +33,7 @@ const useStore = create((set, get) => ({
   totalIterations: 0,
   inputValue: "",
   currentUsedLength: 0,
+  words16: [],
   onStepComplete: null,
 
   animationSpeed: 50,
@@ -95,6 +96,35 @@ const useStore = create((set, get) => ({
 
     set({ memory: newBinaryArray });
     await new Promise((resolve) => setTimeout(resolve, animationSpeed));
+  },
+
+  // Add this method before executeStep
+  splitIntoWords: async () => {
+    const { binaryValue, currentUsedLength } = get();
+
+    // Get the padded binary string (should be 512 bits after step 2)
+    const paddedBinary = binaryValue
+      .toString(2)
+      .padStart(currentUsedLength, "0");
+
+    // Split into 16 words of 32 bits
+    const words = [];
+    for (let i = 0; i < 16; i++) {
+      const start = i * 32;
+      const wordBits = paddedBinary.slice(start, start + 32);
+      const wordValue = parseInt(wordBits, 2);
+      words.push({
+        index: i,
+        bits: wordBits,
+        value: wordValue,
+        hex: wordValue.toString(16).padStart(8, "0").toUpperCase(),
+      });
+    }
+
+    set({ words16: words });
+
+    console.log("16 Words created:", words);
+    return words;
   },
 
   executeStep: async (stepNumber) => {
@@ -165,7 +195,8 @@ const useStore = create((set, get) => ({
           break;
         }
         case 3:
-          newValue = binaryAdd(currentValue, currentValue);
+          await get().splitIntoWords();
+          newValue = currentValue; // No change to binary value
           break;
         case 4:
           newValue = await binaryMultiplyByTwo(currentValue);
