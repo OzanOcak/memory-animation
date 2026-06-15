@@ -20,6 +20,7 @@ function App() {
     inputValue,
     setInputValue,
     words16,
+    hashValues,
   } = useStore();
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -132,6 +133,55 @@ function App() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* In App.js - Add below words display */}
+            {hashValues && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 p-4 bg-gray-900/80 rounded-xl border border-gray-700"
+              >
+                <div className="text-sm font-bold text-gray-300 mb-3">
+                  🔐 SHA-1 Initial Hash Values (Step 4)
+                </div>
+                <div className="grid grid-cols-5 gap-2">
+                  <div className="bg-gray-800 rounded-lg p-2 text-center">
+                    <div className="text-xs text-blue-400">H0</div>
+                    <div className="font-mono text-xs text-green-400">
+                      0x67452301
+                    </div>
+                  </div>
+                  <div className="bg-gray-800 rounded-lg p-2 text-center">
+                    <div className="text-xs text-blue-400">H1</div>
+                    <div className="font-mono text-xs text-green-400">
+                      0xefcdab89
+                    </div>
+                  </div>
+                  <div className="bg-gray-800 rounded-lg p-2 text-center">
+                    <div className="text-xs text-blue-400">H2</div>
+                    <div className="font-mono text-xs text-green-400">
+                      0x98badcfe
+                    </div>
+                  </div>
+                  <div className="bg-gray-800 rounded-lg p-2 text-center">
+                    <div className="text-xs text-blue-400">H3</div>
+                    <div className="font-mono text-xs text-green-400">
+                      0x10325476
+                    </div>
+                  </div>
+                  <div className="bg-gray-800 rounded-lg p-2 text-center">
+                    <div className="text-xs text-blue-400">H4</div>
+                    <div className="font-mono text-xs text-green-400">
+                      0xc3d2e1f0
+                    </div>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 mt-2 text-center">
+                  These constants are used to initialize SHA-1 before processing
+                  the message
                 </div>
               </motion.div>
             )}

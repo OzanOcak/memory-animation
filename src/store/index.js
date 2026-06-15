@@ -9,8 +9,6 @@ import {
 import {
   binaryAdd,
   binarySubtract,
-  //binaryMultiplyByItself,
-  binaryMultiplyByTwo,
   binaryMultiplyByTwenty,
 } from "./operations";
 import { steps } from "./steps";
@@ -35,6 +33,7 @@ const useStore = create((set, get) => ({
   currentUsedLength: 0,
   words16: [],
   onStepComplete: null,
+  hashValues: null,
 
   animationSpeed: 50,
   iterationDelay: 800,
@@ -127,6 +126,16 @@ const useStore = create((set, get) => ({
     return words;
   },
 
+  initHash: async () => {
+    const { initHashReal } = await import("../core/sha1");
+    const hash = initHashReal();
+
+    set({ hashValues: hash });
+
+    console.log("Hash initialized:", hash);
+    return hash;
+  },
+
   executeStep: async (stepNumber) => {
     const {
       isExecuting,
@@ -199,7 +208,8 @@ const useStore = create((set, get) => ({
           newValue = currentValue; // No change to binary value
           break;
         case 4:
-          newValue = await binaryMultiplyByTwo(currentValue);
+          await get().initHash();
+          newValue = currentValue; // No change to binary value
           break;
         case 5:
           newValue = binarySubtract(currentValue, 2n);
