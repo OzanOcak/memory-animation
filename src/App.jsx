@@ -21,6 +21,7 @@ function App() {
     setInputValue,
     words16,
     hashValues,
+    messageSchedule,
   } = useStore();
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -45,7 +46,7 @@ function App() {
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-center mb-8"
+          className="text-center mb-4"
         >
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             Memory Bit Map Processor
@@ -182,6 +183,32 @@ function App() {
                 <div className="text-xs text-gray-500 mt-2 text-center">
                   These constants are used to initialize SHA-1 before processing
                   the message
+                </div>
+              </motion.div>
+            )}
+
+            {/* Show Step 5 Message Schedule - stays visible after step completes */}
+            {messageSchedule.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 p-4 bg-gray-900/80 rounded-xl border border-gray-700"
+              >
+                <div className="text-sm font-bold text-gray-300 mb-3">
+                  📋 Message Schedule (80 Words) - Step 5 Complete
+                </div>
+                <div className="grid grid-cols-4 gap-1 max-h-60 overflow-y-auto">
+                  {messageSchedule.map((word, idx) => (
+                    <div key={idx} className="bg-gray-800 rounded p-1 text-xs">
+                      <span className="text-blue-400">W[{idx}]</span>
+                      <span className="text-green-400 ml-1">
+                        0x{word.toString(16).padStart(8, "0").toUpperCase()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="text-xs text-gray-500 mt-2 text-center">
+                  16 original words → 80 expanded words (W[0] to W[79])
                 </div>
               </motion.div>
             )}

@@ -26,7 +26,7 @@ export const steps = [
   },
   {
     number: 5,
-    label: "Step 5: Create Message Schedule (16 → 80 words)",
+    label: "Step 5: Create Message Schedule",
     description: `Expand 16 words to 80 words using XOR and left rotation`,
     iterations: 1,
   },

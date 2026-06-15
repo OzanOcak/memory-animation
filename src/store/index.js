@@ -34,6 +34,7 @@ const useStore = create((set, get) => ({
   words16: [],
   onStepComplete: null,
   hashValues: null,
+  messageSchedule: [],
 
   animationSpeed: 50,
   iterationDelay: 800,
@@ -136,6 +137,37 @@ const useStore = create((set, get) => ({
     return hash;
   },
 
+  // Add this after initHash method
+  createSchedule: async () => {
+    const { words16 } = get();
+
+    // Helper: Left rotate function
+    const rotl = (x, n) => {
+      return ((x << n) | (x >>> (32 - n))) >>> 0;
+    };
+
+    // Start with the 16 words
+    const W = new Array(80);
+    for (let i = 0; i < 16; i++) {
+      W[i] = words16[i].value;
+    }
+
+    // Expand to 80 words
+    for (let i = 16; i < 80; i++) {
+      const val = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
+      W[i] = rotl(val, 1);
+    }
+
+    // Store the schedule
+    set({ messageSchedule: W });
+
+    console.log("Message Schedule created (80 words)");
+    console.log("W[0] to W[15]:", W.slice(0, 16));
+    console.log("W[16] to W[31]:", W.slice(16, 32));
+
+    return W;
+  },
+
   executeStep: async (stepNumber) => {
     const {
       isExecuting,
@@ -212,7 +244,8 @@ const useStore = create((set, get) => ({
           newValue = currentValue; // No change to binary value
           break;
         case 5:
-          newValue = binarySubtract(currentValue, 2n);
+          await get().createSchedule();
+          newValue = currentValue; // No change to binary value
           break;
         case 6:
           newValue = await binaryMultiplyByTwenty(currentValue, binaryAdd);

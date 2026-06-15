@@ -21,9 +21,9 @@ const MemoryGrid = () => {
     <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 shadow-2xl border border-gray-700">
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
-          <h2 className="text-lg font-semibold text-gray-300">
-            Memory Grid (16×16 = 256 bits)
-          </h2>
+          {/*<h2 className="text-lg font-semibold text-gray-300">
+             Memory Grid (16×16 = 256 bits)
+          </h2>*/}
           {currentStep && totalIterations > 0 && (
             <div className="bg-blue-600 px-3 py-1 rounded-full text-xs font-bold animate-pulse">
               Step {currentStep} - Iteration {currentIteration}/
@@ -43,15 +43,15 @@ const MemoryGrid = () => {
               bits
             </div>
           </div>
-          <div className="font-mono text-2xl font-bold text-green-400 break-all">
+          <div className="font-mono text-xs font-bold text-green-400 break-all">
             {binaryValue.toString()}
           </div>
-          <div className="text-xs text-gray-400 mt-2">
+          {/* <div className="text-xs text-gray-400 mt-2">
             Binary ({currentUsedLength} bits):
           </div>
           <div className="font-mono text-xs text-blue-400 break-all">
             {binaryValue.toString(2).padStart(currentUsedLength, "0")}
-          </div>
+          </div>*/}
         </div>
       </div>
 
